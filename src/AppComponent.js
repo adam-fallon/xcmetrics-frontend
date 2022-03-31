@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import ComboBoxComponent from "./ComboBox";
 import ChartComponent from "./ChartComponent";
 
+// const endpoint = "http://tl-macxcode09p.thetrainline.com:3001"
+const endpoint = "http://localhost:3000"
+
 class AppComponent extends Component {
     constructor(props) {
         super();
@@ -9,13 +12,14 @@ class AppComponent extends Component {
         this.props = props;
         this.state = {
             data: {},
-            users: []
+            users: [],
+            schemas: []
         }
     }
 
     requestData = () => {
         var context = this;
-        fetch("http://tl-macxcode09p.thetrainline.com:3001/builds")
+        fetch(`${endpoint}/builds`)
             .then((response) => {
                 return response.json();
             })
@@ -30,7 +34,7 @@ class AppComponent extends Component {
 
     requestUserIDs = () => {
         var context = this;
-        fetch("http://tl-macxcode09p.thetrainline.com:3001/user_id")
+        fetch(`${endpoint}/user_id`)
             .then((response) => {
                 return response.json();
             })
@@ -52,9 +56,31 @@ class AppComponent extends Component {
             })
     }
 
+    requestSchemas = () => {
+        var context = this;
+        fetch(`${endpoint}/schemas`)
+            .then((response) => {
+                return response.json();
+            })
+            .then((json) => {
+
+                var schemas = [];
+                json.rows.map(row => {
+                    schemas.push({ id: row.schema, name: row.schema })
+                })
+
+                context.setState({ schemas: schemas })
+                console.log("got schemas")
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+    }
+
     componentDidMount = () => {
         this.requestData();
         this.requestUserIDs();
+        this.requestSchemas();
     }
 
     peopleComboBoxChange = (selectedPerson) => {
@@ -62,13 +88,17 @@ class AppComponent extends Component {
     }
 
     processData = () => {
-      // TODO 1 : using this.state.data filter to get the correct data to display.
-      
-      var row = {[
-        { x: "Monday 26th February", y: 200 }
-      ]}
-      console.log(data)
-      return data
+        // TODO 1 : using this.state.data filter to get the correct data to display.
+
+        //   var row = {[
+        //     { x: "Monday 26th February", y: 200 }
+        //   ]}
+        // console.log(data)
+        // return data
+    }
+
+    schemaComboBoxChange = (selectedPerson) => {
+        console.log("callback selectedPerson invoked");
     }
 
     render() {
@@ -87,7 +117,8 @@ class AppComponent extends Component {
         var peopleSelector = <p></p>
         if (this.state.users.length > 0) {
             peopleSelector = <ComboBoxComponent
-                people={this.state.users}
+                elements={this.state.users}
+                title="Person"
                 notifyComboBoxChanged={this.peopleComboBoxChange}
             />
         }
@@ -100,15 +131,32 @@ class AppComponent extends Component {
           3. toggle to include categories? - "clean"/"noop"/"incremental" ?
         */
 
+        var schemaSelector = <p></p>
+        if (this.state.schemas.length > 0) {
+            schemaSelector = <ComboBoxComponent
+                elements={this.state.schemas}
+                title="Schemas"
+                notifyComboBoxChanged={this.schemaComboBoxChange}
+            />
+        }
+
         return (
             <div>
-                {
-                    content
-                }
-                <ChartComponent data={processedData}/>
-                {
-                    peopleSelector
-                }
+                <div className="flex grow flex-row">
+                    {
+                        peopleSelector
+                    }
+                    {
+                        schemaSelector
+                    }
+                </div>
+                <div className="mt-4 border-4 border-dashed border-gray-200 rounded-lg h-96">
+                    {
+                        content
+                    }
+                </div>
+                <ChartComponent/>
+
             </div>
         )
     }

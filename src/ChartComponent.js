@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ComboBoxComponent from "./ComboBox";
-import { VictoryLine } from 'victory';
+import { VictoryLine } from "victory"
 
 class ChartComponent extends Component {
     constructor(props) {

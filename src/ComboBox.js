@@ -3,28 +3,20 @@ import { useState } from 'react'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 import { Combobox } from '@headlessui/react'
 
-// const people = [
-//     { id: 1, name: 'Leslie Alexander' },
-//     // More users...
-// ]
-
-// const filteredPeople = people;
-
-
 class ComboBoxComponent extends Component {
     constructor(props) {
         super();
 
         this.props = props;
         this.state = {
-            selectedPerson: this.props.people[0],
-            filteredPeople: this.props.people
+            selectedElement: this.props.elements[0],
+            filtered: this.props.elements
         }
     }
 
-    setSelectedPerson = (selectedPerson) => {        
-        this.setState({ selectedPerson: selectedPerson })
-        this.props.notifyComboBoxChanged(selectedPerson);
+    setSelectedElement = (selectedElement) => {
+        this.setState({ selectedPerson: selectedElement })
+        this.props.notifyComboBoxChanged(selectedElement);
     }
 
     setQuery = (query) => {
@@ -36,8 +28,8 @@ class ComboBoxComponent extends Component {
 
     render() {
         return (
-            <Combobox className="w-1/3"  as="div" value={this.state.selectedPerson} onChange={this.setSelectedPerson}>
-                <Combobox.Label className="block text-sm font-medium text-gray-700">Assigned to</Combobox.Label>
+            <Combobox className="px-2" as="div" value={this.state.selectedElement} onChange={this.setSelectedElement}>
+                <Combobox.Label className="block text-sm font-medium text-gray-700">{this.props.title}</Combobox.Label>
                 <div className="relative mt-1">
                     <Combobox.Input
                         className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
@@ -48,9 +40,9 @@ class ComboBoxComponent extends Component {
                         <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </Combobox.Button>
 
-                    {this.state.filteredPeople.length > 0 && (
+                    {this.state.filtered.length > 0 && (
                         <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                            {this.state.filteredPeople.map((person) => (
+                            {this.state.filtered.map((person) => (
                                 <Combobox.Option
                                     key={person.id}
                                     value={person}
