@@ -113,6 +113,9 @@ class AppComponent extends Component {
                 <span className="material-icons text-5xl">face</span>
             </p>
         }
+            content = <div className="flex justify-center items-center h-96">
+                <ChartComponent/>
+            </div>
 
         var peopleSelector = <p></p>
         if (this.state.users.length > 0) {
@@ -155,7 +158,6 @@ class AppComponent extends Component {
                         content
                     }
                 </div>
-                <ChartComponent/>
 
             </div>
         )
