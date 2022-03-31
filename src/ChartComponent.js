@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ComboBoxComponent from "./ComboBox";
-import { VictoryLine, VictoryChart, VictoryLabel, VictoryTooltip, VictoryVoronoiContainer, VictoryLegend } from "victory"
+import { VictoryLine, VictoryChart, VictoryLabel, VictoryTooltip, VictoryVoronoiContainer, VictoryLegend, VictoryScatter } from "victory"
 
 class ChartComponent extends Component {
     constructor(props) {
@@ -67,7 +67,7 @@ class ChartComponent extends Component {
         }
 
         allocatedColourPerPerson[line[0].person] = selectedColour
-        legendData.push({ name: line[0].person, symbol: { fill: selectedColour } })
+        legendData.push({ name: line[0].person, symbol: { fill: selectedColour, type: "star" } })
       })
 
         return (
@@ -75,13 +75,8 @@ class ChartComponent extends Component {
             <VictoryChart
             height={300}
             width={700}
-            padding={{ left: 200 }}
-            containerComponent={
-              <VictoryVoronoiContainer voronoiDimension="x"
-              labels={({ datum }) => `y: ${datum.y}`}
-              labelComponent={<VictoryTooltip cornerRadius={0} flyoutStyle={{fill: "white"}}/>}
-              />
-            }
+            padding={{ left: 200, right: 15, top:20, bottom:25 }}
+            domainPadding={10}
           >
 
           <VictoryLegend x={0} y={50}
@@ -94,21 +89,33 @@ class ChartComponent extends Component {
               />
               {
                   this.props.data.map((line, index) => {
-
-                    return <VictoryLine
+                    return [
+                      <VictoryLine
                       key={index}
                       style={{
                         data: { stroke: allocatedColourPerPerson[line[0].person], strokeWidth: 2, strokeLinecap: "round" },
                         labels: {fill: allocatedColourPerPerson[line[0].person]}
                       }}
-                      // interpolation="natural"
                       data={line}
-                      // labelComponent={<VictoryLabel dx={10} dy={15} renderInPortal />}
                       animate={{
                         duration: 1000,
                         onLoad: { duration: 1000 }
                       }}
+                    />,
+
+                    <VictoryScatter
+                      style={{ data: { fill: allocatedColourPerPerson[line[0].person]} }}
+                      size={3}
+                      data={line}
+                      animate={{
+                        duration: 2000,
+                        onLoad: { duration: 1000 }
+                      }}
+                      labels={({ datum }) => `${line[0].person}: ${datum.y}`}
+                      labelComponent={<VictoryTooltip cornerRadius={0} flyoutStyle={{fill: "white"}}/>}
                     />
+
+                  ]
                   })
 
               }
