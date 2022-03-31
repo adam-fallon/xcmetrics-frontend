@@ -13,7 +13,9 @@ class AppComponent extends Component {
         this.state = {
             data: {},
             users: [],
-            schemas: []
+            schemas: [],
+            selectedPeople: [],
+            selectedSchemas: []
         }
     }
 
@@ -64,7 +66,10 @@ class AppComponent extends Component {
             })
             .then((json) => {
 
-                var schemas = [];
+                var schemas = [{
+                    id: "All",
+                    name: "All"
+                }];
                 json.rows.map(row => {
                     schemas.push({ id: row.schema, name: row.schema })
                 })
@@ -85,14 +90,30 @@ class AppComponent extends Component {
 
     peopleComboBoxChange = (selectedPeople) => {
         console.log(`callback selectedPerson invoked with ${JSON.stringify(selectedPeople)}`);
+        this.setState({selectedPeople : selectedPeople})
     }
 
     processData = () => {
-        var formattedData = {} ; // date -> { number of records / total duration}
+        var lines = [];
 
-        // creating the totals
-        this.state.data.map(row=> {
-          console.log("iterating through a row " + row.day)
+        if(this.state.selectedPeople.length == 0) {
+          lines.push(this.createLineForAllPeople())
+        } else {
+          // todo we need to create a line for individual people!
+        }
+
+        return lines
+    }
+
+    createLineForAllPeople = () => {
+      var formattedData = {} ; // date -> { number of records / total duration}
+
+      // creating the totals
+      this.state.data.map(row=> {
+
+        if (this.state.selectedSchemas.includes(row.schema)
+              || this.state.selectedSchemas.length == 0) {
+          // console.log("iterating through a row " + row.day)
           if(formattedData[row.day] != undefined) {
             var record = formattedData[row.day];
             record.count ++;
@@ -102,24 +123,29 @@ class AppComponent extends Component {
             var record = {"count": 1, "duration": row.duration}
             formattedData[row.day] = record
           }
-        })
-        // console.log(JSON.stringify(formattedData))
-        // format data to render in the chart
-
-        var line = []
-        for (var key in formattedData) {
-          var record = formattedData[key]
-          let average = Math.round(record.duration / record.count)
-          line.push({x : key, y: average, label: "all"})
         }
+      })
 
-        var lines = [];
-        lines.push(line)
-        return lines
+
+      // format data to render in the chart
+      var line = []
+      for (var key in formattedData) {
+        var record = formattedData[key]
+        let average = Math.round(record.duration / record.count)
+        line.push({x : key, y: average, label: "all"})
+      }
+      return line
     }
 
     schemaComboBoxChange = (selectedSchema) => {
         console.log("callback selectedSchema invoked");
+        console.log(selectedSchema)
+
+        var formatted = []
+        selectedSchema.map(item => {
+          formatted.push(item.id)
+        })
+        this.setState({selectedSchemas : formatted})
     }
 
     render() {
