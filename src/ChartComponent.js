@@ -108,7 +108,7 @@ class ChartComponent extends Component {
                       size={3}
                       data={line}
                       animate={{
-                        duration: 2000,
+                        duration: 500,
                         onLoad: { duration: 1000 }
                       }}
                       labels={({ datum }) => `${line[0].person}: ${datum.y}`}
