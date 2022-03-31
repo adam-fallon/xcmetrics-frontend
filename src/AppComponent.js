@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import ComboBoxComponent from "./ComboBox";
 import ChartComponent from "./ChartComponent";
+import moment from 'moment';
 
 // const endpoint = "http://tl-macxcode09p.thetrainline.com:3001"
 const endpoint = "http://localhost:3000"
+const dateFormat = "DD ddd MMM"
 
 class AppComponent extends Component {
     constructor(props) {
@@ -135,7 +137,9 @@ class AppComponent extends Component {
       for (var key in formattedData) {
         var record = formattedData[key]
         let average = Math.round(record.duration / record.count)
-        line.push({x : key, y: average, person: "all"})
+        let formattedDate = moment(new Date(key)).format(dateFormat).toString()
+        line.push({x : formattedDate, y: average, person: "all"})
+
       }
       return line
     }
@@ -171,7 +175,8 @@ class AppComponent extends Component {
       for (var key in formattedData) {
         var record = formattedData[key]
         let average = Math.round(record.duration / record.count)
-        line.push({x : key, y: average, person: user_id})
+        let formattedDate = moment(new Date(key)).format(dateFormat).toString()
+        line.push({x : formattedDate, y: average, person: user_id})
       }
       return line
     }
