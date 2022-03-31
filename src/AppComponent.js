@@ -83,8 +83,8 @@ class AppComponent extends Component {
         this.requestSchemas();
     }
 
-    peopleComboBoxChange = (selectedPerson) => {
-        console.log("callback selectedPerson invoked");
+    peopleComboBoxChange = (selectedPeople) => {
+        console.log(`callback selectedPerson invoked with ${JSON.stringify(selectedPeople)}`);
     }
 
     processData = () => {
@@ -97,8 +97,8 @@ class AppComponent extends Component {
         // return data
     }
 
-    schemaComboBoxChange = (selectedPerson) => {
-        console.log("callback selectedPerson invoked");
+    schemaComboBoxChange = (selectedSchema) => {
+        console.log("callback selectedSchema invoked");
     }
 
     render() {
@@ -123,6 +123,7 @@ class AppComponent extends Component {
                 elements={this.state.users}
                 title="Person"
                 notifyComboBoxChanged={this.peopleComboBoxChange}
+                multiSelect={true}
             />
         }
 
@@ -140,6 +141,7 @@ class AppComponent extends Component {
                 elements={this.state.schemas}
                 title="Schemas"
                 notifyComboBoxChanged={this.schemaComboBoxChange}
+                multiSelect={true}
             />
         }
 
@@ -158,7 +160,6 @@ class AppComponent extends Component {
                         content
                     }
                 </div>
-
             </div>
         )
     }
