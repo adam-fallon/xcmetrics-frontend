@@ -168,16 +168,16 @@ class AppComponent extends Component {
             }
         })
 
+      // format data to render in the chart
+      var line = []
+      for (var key in formattedData) {
+        var record = formattedData[key]
+        let average = Math.round(record.duration / record.count)
+        let formattedDate = moment(new Date(key)).format(dateFormat).toString()
+        line.push({x : formattedDate, y: average, person: "all"})
 
-        // format data to render in the chart
-        var line = []
-        for (var key in formattedData) {
-            var record = formattedData[key]
-            let average = Math.round(record.duration / record.count)
-            let formattedDate = moment(new Date(key)).format(dateFormat).toString()
-            line.push({ x: formattedDate, y: average, label: "all" })
-        }
-        return line
+      }
+      return line
     }
 
     createLineForIndividualPerson = (user_id) => {
@@ -190,35 +190,35 @@ class AppComponent extends Component {
         }
         // creating the totals
         filtered.map(row => {
+        // does the user id match
+        if (user_id === row.user_id) {
+          // does this match the schema
+          if (this.state.selectedSchemas.includes(row.schema)
+                || this.state.selectedSchemas.length == 0) {
+            // console.log("iterating through a row " + row.day)
+            if(formattedData[row.day] != undefined) {
+              var record = formattedData[row.day];
+              record.count ++;
+              record.duration += row.duration;
+              formattedData[row.day] = record
+            } else {
+              var record = {"count": 1, "duration": row.duration}
+              formattedData[row.day] = record
+            } // end if for record already exists
+          } // end if for schema
+        }// end if for user_id
+      })
 
-            // does the user id match
-            if (user_id === row.user_id) {
-                // does this match the schema
-                if (this.state.selectedSchemas.includes(row.schema)
-                    || this.state.selectedSchemas.length == 0) {
-                    // console.log("iterating through a row " + row.day)
-                    if (formattedData[row.day] != undefined) {
-                        var record = formattedData[row.day];
-                        record.count++;
-                        record.duration += row.duration;
-                        formattedData[row.day] = record
-                    } else {
-                        var record = { "count": 1, "duration": row.duration }
-                        formattedData[row.day] = record
-                    } // end if for record already exists
-                } // end if for schema
-            }// end if for user_id
-        })
 
-        // format data to render in the chart
-        var line = []
-        for (var key in formattedData) {
-            var record = formattedData[key]
-            let average = Math.round(record.duration / record.count)
-            let formattedDate = moment(new Date(key)).format(dateFormat).toString()
-            line.push({ x: formattedDate, y: average, label: user_id })
-        }
-        return line
+      // format data to render in the chart
+      var line = []
+      for (var key in formattedData) {
+        var record = formattedData[key]
+        let average = Math.round(record.duration / record.count)
+        let formattedDate = moment(new Date(key)).format(dateFormat).toString()
+        line.push({x : formattedDate, y: average, person: user_id})
+      }
+      return line
     }
 
     schemaComboBoxChange = (selectedSchema) => {
