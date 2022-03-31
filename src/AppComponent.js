@@ -19,7 +19,8 @@ class AppComponent extends Component {
             selectedPeople: [],
             selectedSchemas: [],
             categories: [],
-            selectedCategories: []
+            selectedCategories: [],
+            greatestYWeveSeen: 0,
         }
     }
 
@@ -221,6 +222,22 @@ class AppComponent extends Component {
       return line
     }
 
+    updateGreatestYWeveSeen = (lines) => {
+      let currentGreatestY = this.state.greatestYWeveSeen
+      lines.map(line => {
+        line.map(dot => {
+          if (dot.y > currentGreatestY ) {
+            currentGreatestY = dot.y
+          }
+        })
+      })
+
+      if (currentGreatestY != this.state.greatestYWeveSeen) {
+        this.setState({greatestYWeveSeen: currentGreatestY})
+      }
+
+    }
+
     schemaComboBoxChange = (selectedSchema) => {
         console.log("callback selectedSchema invoked");
         console.log(selectedSchema)
@@ -241,8 +258,12 @@ class AppComponent extends Component {
 
         if (this.state.data.length > 0) {
             var processedData = this.processData()
+            this.updateGreatestYWeveSeen(processedData)
             content = <div className="flex justify-center items-center h-96">
-                <ChartComponent data={processedData} />
+                <ChartComponent
+                  data={processedData}
+                  max_y={this.state.greatestYWeveSeen}
+                />
             </div>
         }
 
