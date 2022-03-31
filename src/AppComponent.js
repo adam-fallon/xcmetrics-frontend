@@ -3,8 +3,8 @@ import ComboBoxComponent from "./ComboBox";
 import ChartComponent from "./ChartComponent";
 import moment from 'moment';
 
-// const endpoint = "http://tl-macxcode09p.thetrainline.com:3001"
-const endpoint = "http://localhost:3000"
+const endpoint = "http://tl-macxcode09p.thetrainline.com:3000"
+// const endpoint = "http://localhost:3000"
 const dateFormat = "DD ddd MMM"
 
 class AppComponent extends Component {
