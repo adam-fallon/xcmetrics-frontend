@@ -67,7 +67,7 @@ class ChartComponent extends Component {
         }
 
         allocatedColourPerPerson[line[0].person] = selectedColour
-        legendData.push({ name: line[0].person, symbol: { fill: selectedColour, type: "star" } })
+        legendData.push({ name: line[0].person, symbol: { fill: selectedColour } })
       })
 
         return (
