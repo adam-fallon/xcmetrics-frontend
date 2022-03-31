@@ -252,14 +252,14 @@ class AppComponent extends Component {
     render() {
 
         console.log("render data " + this.state.data.length)
-        var content = <p className="animate-spin-slow flex justify-center items-center h-96">
+        var content = <p className="animate-spin-slow flex justify-center items-center">
             <span className="material-icons text-5xl">sync</span>
         </p>
 
         if (this.state.data.length > 0) {
             var processedData = this.processData()
             this.updateGreatestYWeveSeen(processedData)
-            content = <div className="flex justify-center items-center h-96">
+            content = <div className="flex justify-center items-center">
                 <ChartComponent
                   data={processedData}
                   max_y={this.state.greatestYWeveSeen}
@@ -311,7 +311,7 @@ class AppComponent extends Component {
                         categorySelector
                     }
                 </div>
-                <div className="mt-4 border-4 border-dashed border-gray-200 rounded-lg h-96">
+                <div className="p-2 mt-4 border-4 border-dashed border-gray-200 rounded-lg h-2/3">
                     {
                         content
                     }

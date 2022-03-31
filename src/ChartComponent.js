@@ -73,8 +73,8 @@ class ChartComponent extends Component {
         return (
             <div>
             <VictoryChart
-              height={300}
-              width={700}
+              height={500}
+              width={1000}
               padding={{ left: 200, right: 15, top:20, bottom:25 }}
               domainPadding={10}
               maxDomain={{ y: this.props.max_y}}
