@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ComboBoxComponent from "./ComboBox";
+import ChartComponent from "./ChartComponent";
 
 class AppComponent extends Component {
     constructor(props) {
@@ -60,7 +61,18 @@ class AppComponent extends Component {
         console.log("callback selectedPerson invoked");
     }
 
+    processData = () => {
+      // TODO 1 : using this.state.data filter to get the correct data to display.
+      
+      var row = {[
+        { x: "Monday 26th February", y: 200 }
+      ]}
+      console.log(data)
+      return data
+    }
+
     render() {
+        var processedData = this.processData()
         console.log("render data " + this.state.data.length)
         var content = <p className="animate-spin-slow flex justify-center items-center h-96">
             <span className="material-icons text-5xl">sync</span>
@@ -74,17 +86,26 @@ class AppComponent extends Component {
 
         var peopleSelector = <p></p>
         if (this.state.users.length > 0) {
-            peopleSelector = <ComboBoxComponent                
+            peopleSelector = <ComboBoxComponent
                 people={this.state.users}
                 notifyComboBoxChanged={this.peopleComboBoxChange}
             />
         }
+
+        // TODO 2: render selection controls and update this.state with what was selected.
+        /*
+          1. toggle button Render this.state.showEveryone (true/false)
+          2. this.state.selectedPeople = ["user_id", "user_id"]
+          2. drop down for schema - this.state.selectedSchema ("string")
+          3. toggle to include categories? - "clean"/"noop"/"incremental" ?
+        */
 
         return (
             <div>
                 {
                     content
                 }
+                <ChartComponent data={processedData}/>
                 {
                     peopleSelector
                 }
