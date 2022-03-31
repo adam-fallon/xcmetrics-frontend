@@ -17,7 +17,9 @@ class AppComponent extends Component {
             users: [],
             schemas: [],
             selectedPeople: [],
-            selectedSchemas: []
+            selectedSchemas: [],
+            categories: [],
+            selectedCategories: []
         }
     }
 
@@ -60,6 +62,31 @@ class AppComponent extends Component {
             })
     }
 
+    requestCategories = () => {
+        var context = this;
+        fetch(`${endpoint}/categories`)
+            .then((response) => {
+                return response.json();
+            })
+            .then((json) => {
+
+                var categories = [{
+                    id: "All",
+                    name: "All"
+                }];
+                json.rows.map(row => {
+                    categories.push({ id: row.category, name: row.category })
+                })
+
+                context.setState({ categories: categories })
+                console.dir(categories)
+                console.log("got categories")
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+    }
+
     requestSchemas = () => {
         var context = this;
         fetch(`${endpoint}/schemas`)
@@ -88,96 +115,110 @@ class AppComponent extends Component {
         this.requestData();
         this.requestUserIDs();
         this.requestSchemas();
+        this.requestCategories();
     }
 
     peopleComboBoxChange = (selectedPeople) => {
         console.log(`callback selectedPerson invoked with ${JSON.stringify(selectedPeople)}`);
-        this.setState({selectedPeople : selectedPeople})
+        this.setState({ selectedPeople: selectedPeople })
+    }
+
+    categoryComboBoxChange = (selectedCategories) => {
+        console.log(`callback selectedCategories invoked with ${JSON.stringify(selectedCategories)}`);
+        this.setState({ selectedCategories: selectedCategories })
     }
 
     processData = () => {
         var lines = [];
 
-        if(this.state.selectedPeople.length == 0) {
-          lines.push(this.createLineForAllPeople())
+        if (this.state.selectedPeople.length == 0) {
+            lines.push(this.createLineForAllPeople())
         } else {
 
-          this.state.selectedPeople.map(person => {
-            lines.push(this.createLineForIndividualPerson(person.id))
-          })
+            this.state.selectedPeople.map(person => {
+                lines.push(this.createLineForIndividualPerson(person.id))
+            })
         }
 
         return lines
     }
 
     createLineForAllPeople = () => {
-      var formattedData = {} ; // date -> { number of records / total duration}
+        var formattedData = {}; // date -> { number of records / total duration}
+        var filtered = this.state.data
 
-      // creating the totals
-      this.state.data.map(row=> {
-
-        if (this.state.selectedSchemas.includes(row.schema)
-              || this.state.selectedSchemas.length == 0) {
-          // console.log("iterating through a row " + row.day)
-          if(formattedData[row.day] != undefined) {
-            var record = formattedData[row.day];
-            record.count ++;
-            record.duration += row.duration;
-            formattedData[row.day] = record
-          } else {
-            var record = {"count": 1, "duration": row.duration}
-            formattedData[row.day] = record
-          }
+        if (this.state.selectedCategories.length > 0) {
+            filtered = filtered.filter((row) => this.state.selectedCategories.map((c) => c.id).includes(row.category))
         }
-      })
+        // creating the totals
+        filtered.map(row => {
+
+            if (this.state.selectedSchemas.includes(row.schema)
+                || this.state.selectedSchemas.length == 0) {
+                // console.log("iterating through a row " + row.day)
+                if (formattedData[row.day] != undefined) {
+                    var record = formattedData[row.day];
+                    record.count++;
+                    record.duration += row.duration;
+                    formattedData[row.day] = record
+                } else {
+                    var record = { "count": 1, "duration": row.duration }
+                    formattedData[row.day] = record
+                }
+            }
+        })
 
 
-      // format data to render in the chart
-      var line = []
-      for (var key in formattedData) {
-        var record = formattedData[key]
-        let average = Math.round(record.duration / record.count)
-        let formattedDate = moment(new Date(key)).format(dateFormat).toString()
-        line.push({x : formattedDate, y: average, label: "all"})
-      }
-      return line
+        // format data to render in the chart
+        var line = []
+        for (var key in formattedData) {
+            var record = formattedData[key]
+            let average = Math.round(record.duration / record.count)
+            let formattedDate = moment(new Date(key)).format(dateFormat).toString()
+            line.push({ x: formattedDate, y: average, label: "all" })
+        }
+        return line
     }
 
     createLineForIndividualPerson = (user_id) => {
-      var formattedData = {} ; // date -> { number of records / total duration}
+        var formattedData = {}; // date -> { number of records / total duration}
 
-      // creating the totals
-      this.state.data.map(row=> {
+        var filtered = this.state.data
 
-        // does the user id match
-        if (user_id === row.user_id) {
-          // does this match the schema
-          if (this.state.selectedSchemas.includes(row.schema)
-                || this.state.selectedSchemas.length == 0) {
-            // console.log("iterating through a row " + row.day)
-            if(formattedData[row.day] != undefined) {
-              var record = formattedData[row.day];
-              record.count ++;
-              record.duration += row.duration;
-              formattedData[row.day] = record
-            } else {
-              var record = {"count": 1, "duration": row.duration}
-              formattedData[row.day] = record
-            } // end if for record already exists
-          } // end if for schema
-        }// end if for user_id
-      })
+        if (this.state.selectedCategories.length > 0) {
+            filtered = filtered.filter((row) => this.state.selectedCategories.map((c) => c.id).includes(row.category))
+        }
+        // creating the totals
+        filtered.map(row => {
 
+            // does the user id match
+            if (user_id === row.user_id) {
+                // does this match the schema
+                if (this.state.selectedSchemas.includes(row.schema)
+                    || this.state.selectedSchemas.length == 0) {
+                    // console.log("iterating through a row " + row.day)
+                    if (formattedData[row.day] != undefined) {
+                        var record = formattedData[row.day];
+                        record.count++;
+                        record.duration += row.duration;
+                        formattedData[row.day] = record
+                    } else {
+                        var record = { "count": 1, "duration": row.duration }
+                        formattedData[row.day] = record
+                    } // end if for record already exists
+                } // end if for schema
+            }// end if for user_id
+        })
 
-      // format data to render in the chart
-      var line = []
-      for (var key in formattedData) {
-        var record = formattedData[key]
-        let average = Math.round(record.duration / record.count)
-        let formattedDate = moment(new Date(key)).format(dateFormat).toString()
-        line.push({x : formattedDate, y: average, label: user_id})
-      }
-      return line
+        // format data to render in the chart
+        var line = []
+        for (var key in formattedData) {
+            var record = formattedData[key]
+            let average = Math.round(record.duration / record.count)
+            let formattedDate = moment(new Date(key)).format(dateFormat).toString()
+            line.push({ x: formattedDate, y: average, label: user_id })
+        }
+        return line
     }
 
     schemaComboBoxChange = (selectedSchema) => {
@@ -186,9 +227,9 @@ class AppComponent extends Component {
 
         var formatted = []
         selectedSchema.map(item => {
-          formatted.push(item.id)
+            formatted.push(item.id)
         })
-        this.setState({selectedSchemas : formatted})
+        this.setState({ selectedSchemas: formatted })
     }
 
     render() {
@@ -201,7 +242,7 @@ class AppComponent extends Component {
         if (this.state.data.length > 0) {
             var processedData = this.processData()
             content = <div className="flex justify-center items-center h-96">
-                <ChartComponent data={processedData}/>
+                <ChartComponent data={processedData} />
             </div>
         }
 
@@ -226,6 +267,16 @@ class AppComponent extends Component {
             />
         }
 
+        var categorySelector = <p></p>
+        if (this.state.categories.length > 0) {
+            categorySelector = <ComboBoxComponent
+                elements={this.state.categories}
+                title="Category"
+                notifyComboBoxChanged={this.categoryComboBoxChange}
+                multiSelect={true}
+            />
+        }
+
         return (
             <div>
                 <div className="flex grow flex-row">
@@ -234,6 +285,9 @@ class AppComponent extends Component {
                     }
                     {
                         schemaSelector
+                    }
+                    {
+                        categorySelector
                     }
                 </div>
                 <div className="mt-4 border-4 border-dashed border-gray-200 rounded-lg h-96">

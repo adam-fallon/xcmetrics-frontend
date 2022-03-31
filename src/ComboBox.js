@@ -19,6 +19,8 @@ class ComboBoxComponent extends Component {
         // If we don't have multiselect turned on then just select the element passed in
         if (!this.props.multiSelect) {
             this.setState({ selectedElement: selectedElement })
+            this.state.active.push(selectedElement)
+            this.setState({ active: this.state.active })
             return
         }
 
@@ -47,7 +49,7 @@ class ComboBoxComponent extends Component {
             this.setState({ selectedElement: { id: "Multiple", name: "Multiple" } })
             // this.setState({ selectedElement: { id: this.state.active.map(e => e.name).toString(), name: this.state.active.map(e => e.name).toString() } })
         }
-        
+
         this.props.notifyComboBoxChanged(this.state.active);
     }
 
