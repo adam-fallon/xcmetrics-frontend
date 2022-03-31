@@ -26,6 +26,8 @@ class ComboBoxComponent extends Component {
             // If we select All then we want to query for all elements in the combobox, for this case an empty selection means we should send * to the query on the API
             this.setState({ selectedElement: selectedElement })
             this.setState({ active: [] })
+            this.props.notifyComboBoxChanged([]);
+            return
         }
         else if (this.state.active.map(e => e.id).includes(selectedElement.id)) {
             // Remove an element after selecting it again, this is buggy - sorry!
@@ -45,6 +47,7 @@ class ComboBoxComponent extends Component {
             this.setState({ selectedElement: { id: "Multiple", name: "Multiple" } })
             // this.setState({ selectedElement: { id: this.state.active.map(e => e.name).toString(), name: this.state.active.map(e => e.name).toString() } })
         }
+        
         this.props.notifyComboBoxChanged(this.state.active);
     }
 
