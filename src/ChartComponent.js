@@ -87,7 +87,7 @@ class ChartComponent extends Component {
                       labels={d => d.label}
                       labelComponent={<VictoryLabel dx={10} dy={15} renderInPortal />}
                       animate={{
-                        duration: 2000,
+                        duration: 1000,
                         onLoad: { duration: 1000 }
                       }}
                     />

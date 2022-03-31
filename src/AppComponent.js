@@ -99,7 +99,10 @@ class AppComponent extends Component {
         if(this.state.selectedPeople.length == 0) {
           lines.push(this.createLineForAllPeople())
         } else {
-          // todo we need to create a line for individual people!
+
+          this.state.selectedPeople.map(person => {
+            lines.push(this.createLineForIndividualPerson(person.id))
+          })
         }
 
         return lines
@@ -133,6 +136,42 @@ class AppComponent extends Component {
         var record = formattedData[key]
         let average = Math.round(record.duration / record.count)
         line.push({x : key, y: average, label: "all"})
+      }
+      return line
+    }
+
+    createLineForIndividualPerson = (user_id) => {
+      var formattedData = {} ; // date -> { number of records / total duration}
+
+      // creating the totals
+      this.state.data.map(row=> {
+
+        // does the user id match
+        if (user_id === row.user_id) {
+          // does this match the schema
+          if (this.state.selectedSchemas.includes(row.schema)
+                || this.state.selectedSchemas.length == 0) {
+            // console.log("iterating through a row " + row.day)
+            if(formattedData[row.day] != undefined) {
+              var record = formattedData[row.day];
+              record.count ++;
+              record.duration += row.duration;
+              formattedData[row.day] = record
+            } else {
+              var record = {"count": 1, "duration": row.duration}
+              formattedData[row.day] = record
+            } // end if for record already exists
+          } // end if for schema
+        }// end if for user_id
+      })
+
+
+      // format data to render in the chart
+      var line = []
+      for (var key in formattedData) {
+        var record = formattedData[key]
+        let average = Math.round(record.duration / record.count)
+        line.push({x : key, y: average, label: user_id})
       }
       return line
     }
