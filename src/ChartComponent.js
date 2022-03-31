@@ -8,9 +8,9 @@ class ChartComponent extends Component {
 
         this.props = props;
         this.state = {
-          rows : this.getSampleData()
-        }
 
+        }
+        console.log(JSON.stringify(this.props.data))
     }
 
   getSampleData = () => {
@@ -67,7 +67,7 @@ class ChartComponent extends Component {
             }
           >
               {
-                  this.state.rows.map((row, index) => {
+                  this.props.data.map((row, index) => {
 
                     var selectedColour = greyColour
                     if (colours.length > 0) {

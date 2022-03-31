@@ -88,13 +88,34 @@ class AppComponent extends Component {
     }
 
     processData = () => {
-        // TODO 1 : using this.state.data filter to get the correct data to display.
+        var formattedData = {} ; // date -> { number of records / total duration}
 
-        //   var row = {[
-        //     { x: "Monday 26th February", y: 200 }
-        //   ]}
-        // console.log(data)
-        // return data
+        // creating the totals
+        this.state.data.map(row=> {
+          console.log("iterating through a row " + row.day)
+          if(formattedData[row.day] != undefined) {
+            var record = formattedData[row.day];
+            record.count ++;
+            record.duration += row.duration;
+            formattedData[row.day] = record
+          } else {
+            var record = {"count": 1, "duration": row.duration}
+            formattedData[row.day] = record
+          }
+        })
+        // console.log(JSON.stringify(formattedData))
+        // format data to render in the chart
+
+        var line = []
+        for (var key in formattedData) {
+          var record = formattedData[key]
+          let average = Math.round(record.duration / record.count)
+          line.push({x : key, y: average, label: "all"})
+        }
+
+        var lines = [];
+        lines.push(line)
+        return lines
     }
 
     schemaComboBoxChange = (selectedSchema) => {
@@ -102,20 +123,19 @@ class AppComponent extends Component {
     }
 
     render() {
-        var processedData = this.processData()
+
         console.log("render data " + this.state.data.length)
         var content = <p className="animate-spin-slow flex justify-center items-center h-96">
             <span className="material-icons text-5xl">sync</span>
         </p>
 
         if (this.state.data.length > 0) {
-            content = <p className="flex justify-center items-center h-96">
-                <span className="material-icons text-5xl">face</span>
-            </p>
-        }
+            var processedData = this.processData()
             content = <div className="flex justify-center items-center h-96">
-                <ChartComponent/>
+                <ChartComponent data={processedData}/>
             </div>
+        }
+
 
         var peopleSelector = <p></p>
         if (this.state.users.length > 0) {
@@ -126,14 +146,6 @@ class AppComponent extends Component {
                 multiSelect={true}
             />
         }
-
-        // TODO 2: render selection controls and update this.state with what was selected.
-        /*
-          1. toggle button Render this.state.showEveryone (true/false)
-          2. this.state.selectedPeople = ["user_id", "user_id"]
-          2. drop down for schema - this.state.selectedSchema ("string")
-          3. toggle to include categories? - "clean"/"noop"/"incremental" ?
-        */
 
         var schemaSelector = <p></p>
         if (this.state.schemas.length > 0) {
