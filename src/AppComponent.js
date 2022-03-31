@@ -135,7 +135,7 @@ class AppComponent extends Component {
       for (var key in formattedData) {
         var record = formattedData[key]
         let average = Math.round(record.duration / record.count)
-        line.push({x : key, y: average, label: "all"})
+        line.push({x : key, y: average, person: "all"})
       }
       return line
     }
@@ -171,7 +171,7 @@ class AppComponent extends Component {
       for (var key in formattedData) {
         var record = formattedData[key]
         let average = Math.round(record.duration / record.count)
-        line.push({x : key, y: average, label: user_id})
+        line.push({x : key, y: average, person: user_id})
       }
       return line
     }

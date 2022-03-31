@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ComboBoxComponent from "./ComboBox";
-import { VictoryLine, VictoryChart, VictoryLabel, VictoryTooltip, VictoryVoronoiContainer } from "victory"
+import { VictoryLine, VictoryChart, VictoryLabel, VictoryTooltip, VictoryVoronoiContainer, VictoryLegend } from "victory"
 
 class ChartComponent extends Component {
     constructor(props) {
@@ -56,9 +56,26 @@ class ChartComponent extends Component {
                       "#4FC1E9", "#5D9CEC", "#AC92EC", "#8067B7", "#EC87C0", "#BAA286", "#8E8271"];
       let greyColour = "#AAB2BD";
 
+      let allocatedColourPerPerson = {}
+      var legendData = []
+      this.props.data.map(line => {
+        var selectedColour = greyColour
+        if (colours.length > 0) {
+          let index = this.getRandomInt(colours.length)
+          selectedColour = colours[index]
+          colours.splice(index, 1)
+        }
+
+        allocatedColourPerPerson[line[0].person] = selectedColour
+        legendData.push({ name: line[0].person, symbol: { fill: selectedColour } })
+      })
+
         return (
             <div>
             <VictoryChart
+            height={300}
+            width={700}
+            padding={{ left: 200 }}
             containerComponent={
               <VictoryVoronoiContainer voronoiDimension="x"
               labels={({ datum }) => `y: ${datum.y}`}
@@ -66,26 +83,27 @@ class ChartComponent extends Component {
               />
             }
           >
-              {
-                  this.props.data.map((row, index) => {
 
-                    var selectedColour = greyColour
-                    if (colours.length > 0) {
-                      let index = this.getRandomInt(colours.length)
-                      selectedColour = colours[index]
-                      colours.splice(index, 1)
-                    }
+          <VictoryLegend x={0} y={50}
+                title="Legend"
+                centerTitle
+                orientation="vertical"
+                gutter={20}
+                style={{ border: { stroke: "black" }, title: {fontSize: 10 } }}
+                data={legendData}
+              />
+              {
+                  this.props.data.map((line, index) => {
 
                     return <VictoryLine
                       key={index}
                       style={{
-                        data: { stroke: selectedColour, strokeWidth: 2, strokeLinecap: "round" },
-                        labels: {fill: selectedColour}
+                        data: { stroke: allocatedColourPerPerson[line[0].person], strokeWidth: 2, strokeLinecap: "round" },
+                        labels: {fill: allocatedColourPerPerson[line[0].person]}
                       }}
                       // interpolation="natural"
-                      data={row}
-                      labels={d => d.label}
-                      labelComponent={<VictoryLabel dx={10} dy={15} renderInPortal />}
+                      data={line}
+                      // labelComponent={<VictoryLabel dx={10} dy={15} renderInPortal />}
                       animate={{
                         duration: 1000,
                         onLoad: { duration: 1000 }
